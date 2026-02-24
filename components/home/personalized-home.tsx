@@ -79,7 +79,7 @@ export function PersonalizedHome() {
                   {flower.change === 0 && (
                     <Badge
                       variant="secondary"
-                      className="bg-gray-50 text-xs text-gray-500"
+                      className="bg-muted text-xs text-muted-foreground"
                     >
                       변동없음
                     </Badge>

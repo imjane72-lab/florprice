@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 const categories = ["전체", "자유게시판", "꽃 정보", "나의 작품"] as const;
@@ -98,9 +97,9 @@ const mockPosts = [
 ];
 
 const categoryColors: Record<string, string> = {
-  자유게시판: "bg-gray-100 text-gray-600",
-  "꽃 정보": "bg-green-50 text-green-600",
-"나의 작품": "bg-lavender-light text-primary",
+  자유게시판: "bg-muted text-muted-foreground",
+  "꽃 정보": "bg-green-50 text-green-800",
+"나의 작품": "bg-lavender-light text-foreground",
 };
 
 export default function CommunityPage() {
@@ -117,7 +116,7 @@ export default function CommunityPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-            꽃밭
+            소통
           </h1>
           <p className="mt-1 text-muted-foreground">
             꽃 이야기를 나누는 커뮤니티
@@ -130,21 +129,20 @@ export default function CommunityPage() {
       </div>
 
       {/* Category Filter */}
-      <div className="mt-6 flex gap-2 overflow-x-auto">
+      <div className="mt-6 flex flex-wrap gap-2">
         {categories.map((cat) => (
-          <Button
+          <button
             key={cat}
-            variant="outline"
-            size="sm"
             onClick={() => setSelectedCategory(cat)}
             className={cn(
-              "shrink-0 rounded-full",
-              selectedCategory === cat &&
-                "border-primary bg-lavender-light text-primary",
+              "shrink-0 rounded-full px-5 py-2.5 text-sm font-semibold transition-all",
+              selectedCategory === cat
+                ? "bg-foreground/85 text-background shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] scale-[0.97]"
+                : "bg-white border border-border/60 text-foreground/60 shadow-sm hover:shadow-md hover:bg-muted/30",
             )}
           >
             {cat}
-          </Button>
+          </button>
         ))}
       </div>
 
@@ -161,12 +159,12 @@ export default function CommunityPage() {
                 <div className="flex items-center gap-2">
                   <Badge
                     variant="secondary"
-                    className={`text-[10px] ${categoryColors[post.category] || ""}`}
+                    className={`text-xs font-bold rounded-sm ${categoryColors[post.category] || ""}`}
                   >
                     {post.category}
                   </Badge>
                   {post.isHot && (
-                    <Badge className="gap-0.5 bg-red-500 text-[10px] text-white">
+                    <Badge className="gap-0.5 rounded-sm bg-red-500 text-xs font-bold text-white">
                       <Flame className="h-2.5 w-2.5" />
                       HOT
                     </Badge>

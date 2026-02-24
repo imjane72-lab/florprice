@@ -17,7 +17,7 @@ interface ProductSortProps {
 export function ProductSort({ value, onChange }: ProductSortProps) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-[140px]">
+      <SelectTrigger className="w-35">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

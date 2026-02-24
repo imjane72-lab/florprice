@@ -1,8 +1,7 @@
 export const NAV_LINKS = [
-  { label: "상품", href: "/products" },
   { label: "꽃파트너", href: "/wholesalers" },
   { label: "소품샵", href: "/supplies" },
-  { label: "꽃밭", href: "/community" },
+  { label: "소통", href: "/community" },
   { label: "공지사항", href: "/notice" },
 ] as const;
 
@@ -21,13 +20,33 @@ export const FLOWER_TYPES = [
 
 export const FLOWER_COLORS = [
   "빨강",
+  "코랄",
   "분홍",
-  "흰색",
-  "노랑",
   "보라",
+  "연보라",
+  "파랑",
+  "초록",
+  "노랑",
+  "크림",
   "주황",
+  "흰색",
   "혼합",
 ] as const;
+
+export const FLOWER_COLOR_MAP: Record<string, string> = {
+  빨강: "#DC2626",
+  코랄: "#F87171",
+  분홍: "#F472B6",
+  보라: "#8B5CF6",
+  연보라: "#C4B5FD",
+  파랑: "#3B82F6",
+  초록: "#22C55E",
+  노랑: "#FACC15",
+  크림: "#FEF3C7",
+  주황: "#FB923C",
+  흰색: "#FFFFFF",
+  혼합: "",
+} as const;
 
 export const MATERIAL_TYPES = [
   "유칼립투스",
@@ -40,7 +59,7 @@ export const MATERIAL_TYPES = [
   "아스피디스트라",
 ] as const;
 
-export const FLOWER_GRADES = ["특", "상", "중", "하"] as const;
+export const FLOWER_GRADES = ["특", "상", "중", "세일"] as const;
 
 export const FLOWER_ORIGINS = [
   "국산",

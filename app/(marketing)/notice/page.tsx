@@ -8,8 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { mockNotices } from "@/lib/data/notices";
 
 const categoryColors: Record<string, string> = {
-  공지사항: "bg-primary/10 text-primary",
-  이벤트: "bg-rose-pink-light text-rose-pink",
+  공지사항: "bg-lavender-light text-foreground",
+  이벤트: "bg-rose-pink-light text-rose-700",
   업데이트: "bg-blue-50 text-blue-600",
   시스템점검: "bg-amber-50 text-amber-600",
 };
@@ -60,7 +60,7 @@ export default function NoticePage() {
             >
               <span className="text-muted-foreground">
                 {notice.isPinned ? (
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-xs font-bold rounded-sm">
                     공지
                   </Badge>
                 ) : (
@@ -70,7 +70,7 @@ export default function NoticePage() {
               <span className="flex items-center gap-2">
                 <Badge
                   variant="secondary"
-                  className={`text-[10px] ${categoryColors[notice.category] || ""}`}
+                  className={`text-xs font-bold rounded-sm ${categoryColors[notice.category] || ""}`}
                 >
                   {notice.category}
                 </Badge>
@@ -96,12 +96,12 @@ export default function NoticePage() {
               <div className="flex items-center gap-2">
                 <Badge
                   variant="secondary"
-                  className={`text-[10px] ${categoryColors[notice.category] || ""}`}
+                  className={`text-xs font-bold rounded-sm ${categoryColors[notice.category] || ""}`}
                 >
                   {notice.category}
                 </Badge>
                 {notice.isPinned && (
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-xs font-bold rounded-sm">
                     공지
                   </Badge>
                 )}

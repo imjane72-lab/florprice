@@ -6,32 +6,61 @@ import {
   Ribbon,
   Package,
   Scissors,
+  SlidersHorizontal,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ProductBadge } from "@/components/ui/product-badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { mockSupplies } from "@/lib/data/supplies";
-import { type SupplyCategory } from "@/lib/types/supply";
-
-const categories: Array<"전체" | SupplyCategory> = [
-  "전체",
-  "리본",
-  "포장지",
-  "플로랄폼",
-  "와이어/테이프",
-  "화병/바구니",
-  "기타",
-];
+import {
+  SupplyFilters,
+  type SupplyFilterState,
+} from "@/components/supplies/supply-filters";
+import { FloatingSupplyCartBar } from "@/components/cart/floating-supply-cart-bar";
 
 export default function SuppliesPage() {
   const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("전체");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [filters, setFilters] = useState<SupplyFilterState>({
+    categories: [],
+    colors: [],
+  });
+
+  const toggleSupply = (id: string, checked: boolean) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  };
+
+  const removeSupply = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  };
 
   const filtered = useMemo(() => {
     let result = mockSupplies;
 
-    if (selectedCategory !== "전체") {
-      result = result.filter((s) => s.category === selectedCategory);
+    if (filters.categories.length > 0) {
+      result = result.filter((s) => filters.categories.includes(s.category));
+    }
+    if (filters.colors.length > 0) {
+      result = result.filter(
+        (s) => s.color && filters.colors.includes(s.color),
+      );
     }
 
     if (search) {
@@ -45,10 +74,17 @@ export default function SuppliesPage() {
     }
 
     return result;
-  }, [search, selectedCategory]);
+  }, [search, filters]);
+
+  const selectedSupplies = mockSupplies.filter((s) => selectedIds.has(s.id));
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10">
+    <div
+      className={cn(
+        "mx-auto max-w-7xl px-4 py-10",
+        selectedIds.size > 0 && "pb-28",
+      )}
+    >
       {/* Header */}
       <div>
         <div className="flex items-center gap-2">
@@ -62,26 +98,9 @@ export default function SuppliesPage() {
         </p>
       </div>
 
-      {/* Category pills + Search */}
-      <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex gap-2 overflow-x-auto">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={cn(
-                "shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-all",
-                selectedCategory === cat
-                  ? "border-primary bg-lavender-light text-primary"
-                  : "border-border/50 text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        <div className="relative max-w-xs flex-1">
+      {/* Search + Filter button */}
+      <div className="mt-6 flex items-center gap-3">
+        <div className="relative max-w-sm flex-1 sm:flex-initial sm:w-72">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="소품 이름, 판매처..."
@@ -90,6 +109,19 @@ export default function SuppliesPage() {
             className="rounded-full pl-9"
           />
         </div>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon" className="lg:hidden">
+              <SlidersHorizontal className="h-4 w-4" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-80">
+            <SheetTitle>필터</SheetTitle>
+            <div className="mt-6">
+              <SupplyFilters filters={filters} onChange={setFilters} />
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
 
       {/* Results count */}
@@ -97,101 +129,137 @@ export default function SuppliesPage() {
         {filtered.length}개 소품
       </div>
 
-      {/* Supply List */}
-      <div className="mt-4 space-y-2">
-        {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-lg font-medium text-muted-foreground">
-              검색 결과가 없습니다
-            </p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              다른 카테고리나 검색어를 시도해 보세요
-            </p>
-          </div>
-        ) : (
-          filtered.map((supply) => {
-            const displayPrice =
-              supply.isSale && supply.salePrice
-                ? supply.salePrice
-                : supply.price;
-            const Icon = supply.category === "리본" ? Ribbon : Package;
+      {/* Content: Sidebar + List */}
+      <div className="mt-4 flex gap-10">
+        {/* Desktop Sidebar */}
+        <aside className="hidden w-56 shrink-0 lg:block">
+          <SupplyFilters filters={filters} onChange={setFilters} />
+        </aside>
 
-            return (
-              <div
-                key={supply.id}
-                className="group flex items-center gap-4 rounded-xl border border-border/50 bg-white px-4 py-3 transition-all hover:border-primary/20 hover:shadow-sm"
-              >
-                {/* Icon */}
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-muted">
-                  <Icon className="h-6 w-6 text-primary/30" />
-                </div>
+        {/* Supply List */}
+        <div className="flex-1 space-y-2">
+          {filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <p className="text-lg font-medium text-muted-foreground">
+                검색 결과가 없습니다
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                다른 카테고리나 검색어를 시도해 보세요
+              </p>
+            </div>
+          ) : (
+            filtered.map((supply) => {
+              const displayPrice =
+                supply.isSale && supply.salePrice
+                  ? supply.salePrice
+                  : supply.price;
+              const formattedPrice = displayPrice.toLocaleString("ko-KR");
+              const originalPrice = supply.price.toLocaleString("ko-KR");
+              const Icon = supply.category === "리본" ? Ribbon : Package;
+              const isChecked = selectedIds.has(supply.id);
 
-                {/* Info */}
-                <div className="flex min-w-0 flex-1 items-center gap-3">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="truncate font-semibold">
-                        {supply.name}
-                      </span>
-                      {supply.isNewArrival && (
-                        <Badge className="shrink-0 bg-rose-pink text-[10px] font-semibold text-white">
-                          NEW
-                        </Badge>
-                      )}
-                      {supply.isSale && (
-                        <Badge className="shrink-0 bg-red-500 text-[10px] font-semibold text-white">
-                          SALE
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
-                      {supply.description}
-                    </p>
-                    <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                      <span>{supply.seller}</span>
-                      <span>·</span>
-                      <span>{supply.category}</span>
-                    </div>
+              return (
+                <div
+                  key={supply.id}
+                  className={cn(
+                    "group flex items-center gap-5 rounded-xl border bg-white px-5 py-5 transition-all",
+                    isChecked
+                      ? "border-primary/30 bg-lavender-light/20"
+                      : "border-border/50 hover:border-primary/20 hover:shadow-sm",
+                  )}
+                >
+                  {/* Checkbox */}
+                  <Checkbox
+                    checked={isChecked}
+                    onCheckedChange={(v) =>
+                      toggleSupply(supply.id, v === true)
+                    }
+                    className="shrink-0"
+                  />
+
+                  {/* Thumbnail */}
+                  <div className="flex h-26 w-26 shrink-0 items-center justify-center rounded-xl bg-muted">
+                    <Icon size={32} className="text-muted-foreground/40" />
                   </div>
 
-                  {/* Stock */}
-                  <span
-                    className={cn(
-                      "hidden shrink-0 text-sm lg:block",
-                      supply.stock < 20
-                        ? "font-semibold text-destructive"
-                        : "text-muted-foreground",
-                    )}
-                  >
-                    재고 {supply.stock}
-                  </span>
+                  {/* Info */}
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
+                    <div className="min-w-0 flex flex-col flex-1">
+                      <div className="flex items-center gap-2">
+                        {supply.isNewArrival && (
+                          <ProductBadge variant="new">NEW</ProductBadge>
+                        )}
+                        {supply.isSale && (
+                          <ProductBadge variant="sale">SALE</ProductBadge>
+                        )}
+                        <ProductBadge variant="category">
+                          {supply.category}
+                        </ProductBadge>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="truncate text-base font-semibold">
+                          {supply.name}
+                        </span>
+                      </div>
+                      <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
+                        <span>{supply.seller}</span>
+                        <span>·</span>
+                        <span>{supply.category}</span>
+                        {supply.color && (
+                          <>
+                            <span>·</span>
+                            <span>{supply.color}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
 
-                  {/* Price */}
-                  <div className="shrink-0 text-right">
-                    {supply.isSale && supply.salePrice ? (
-                      <>
-                        <span className="mr-1 text-xs text-muted-foreground line-through">
-                          {supply.price.toLocaleString("ko-KR")}
+                    {/* Price */}
+                    <div className="flex flex-col gap-1">
+                      <div className="shrink-0 text-right">
+                        {supply.isSale && supply.salePrice ? (
+                          <>
+                            <span className="mr-1 text-xs text-muted-foreground line-through">
+                              {originalPrice}
+                            </span>
+                            <span className="text-lg font-bold text-red-500">
+                              {formattedPrice}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-lg font-bold">
+                            {formattedPrice}
+                          </span>
+                        )}
+                        <span className="text-xs text-muted-foreground">
+                          원/{supply.unit}
                         </span>
-                        <span className="text-base font-bold text-red-500">
-                          {displayPrice.toLocaleString("ko-KR")}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span
+                          className={cn(
+                            "hidden shrink-0 lg:block",
+                            supply.stock < 20
+                              ? "font-semibold text-destructive"
+                              : "",
+                          )}
+                        >
+                          재고 {supply.stock}
                         </span>
-                      </>
-                    ) : (
-                      <span className="text-base font-bold">
-                        {displayPrice.toLocaleString("ko-KR")}
-                      </span>
-                    )}
-                    <span className="text-xs text-muted-foreground">
-                      원/{supply.unit}
-                    </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })
-        )}
+              );
+            })
+          )}
+        </div>
       </div>
+
+      <FloatingSupplyCartBar
+        selectedSupplies={selectedSupplies}
+        onRemove={removeSupply}
+      />
     </div>
   );
 }

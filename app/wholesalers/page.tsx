@@ -4,13 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { Search, MapPin, Star, Package, ShieldCheck } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { mockWholesalers } from "@/lib/data/wholesalers";
-import { mockProducts } from "@/lib/data/products";
 import { cn } from "@/lib/utils";
 
-const typeFilters = ["전체", "꽃도매", "부자재"] as const;
+const typeFilters = ["전체", "꽃도매", "부자재도매"] as const;
 const locationFilters = ["전체", "고속터미널", "양재 화훼공판장"] as const;
 
 export default function WholesalersPage() {
@@ -41,44 +39,48 @@ export default function WholesalersPage() {
         </p>
       </div>
 
-      {/* Type filter (꽃도매 / 부자재) */}
-      <div className="mt-6 flex rounded-full bg-muted/40 p-1 w-fit">
-        {typeFilters.map((t) => (
-          <button
-            key={t}
-            onClick={() => setTypeFilter(t)}
-            className={cn(
-              "rounded-full px-5 py-1.5 text-sm font-medium transition-all",
-              typeFilter === t
-                ? "bg-white shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
+      {/* Filters */}
+      <div className="mt-6 flex flex-col gap-3">
+        {/* 타입 필터 */}
+        <div className="flex gap-2">
+          {typeFilters.map((t) => (
+            <button
+              key={t}
+              onClick={() => setTypeFilter(t)}
+              className={cn(
+                "rounded-full px-5 py-2.5 text-sm font-semibold transition-all",
+                typeFilter === t
+                  ? "bg-foreground/85 text-background shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] scale-[0.97]"
+                  : "bg-white border border-border/60 text-foreground/60 shadow-sm hover:shadow-md hover:bg-muted/30",
+              )}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
 
-      {/* Location & Search */}
-      <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* 위치 필터 */}
         <div className="flex gap-2">
           {locationFilters.map((loc) => (
-            <Button
+            <button
               key={loc}
-              variant="outline"
-              size="sm"
               onClick={() => setLocationFilter(loc)}
               className={cn(
-                "rounded-full",
-                locationFilter === loc &&
-                  "border-primary bg-lavender-light text-primary"
+                "rounded-full px-5 py-2.5 text-sm font-semibold transition-all",
+                locationFilter === loc
+                  ? "bg-foreground/85 text-background shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] scale-[0.97]"
+                  : "bg-white border border-border/60 text-foreground/60 shadow-sm hover:shadow-md hover:bg-muted/30",
               )}
             >
               {loc}
-            </Button>
+            </button>
           ))}
         </div>
-        <div className="relative max-w-sm flex-1">
+      </div>
+
+      {/* Search */}
+      <div className="mt-4 flex sm:justify-end">
+        <div className="relative max-w-sm flex-1 sm:flex-initial sm:w-72">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="파트너 또는 품목 검색..."
@@ -97,13 +99,6 @@ export default function WholesalersPage() {
       {/* Partner Cards */}
       <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filtered.map((ws) => {
-          const wsProducts = mockProducts.filter(
-            (p) => p.wholesalerId === ws.id
-          );
-          const lowestPrice = wsProducts.length
-            ? Math.min(...wsProducts.map((p) => p.price))
-            : 0;
-
           return (
             <Link
               key={ws.id}
@@ -123,8 +118,8 @@ export default function WholesalersPage() {
                     <Badge
                       variant="secondary"
                       className={cn(
-                        "text-[10px]",
-                        ws.type === "부자재"
+                        "text-xs font-bold rounded-sm",
+                        ws.type === "부자재도매"
                           ? "bg-amber-50 text-amber-600"
                           : "bg-green-50 text-green-600",
                       )}
@@ -156,7 +151,7 @@ export default function WholesalersPage() {
                   <Badge
                     key={s}
                     variant="secondary"
-                    className="bg-lavender-light/50 text-xs text-primary"
+                    className="bg-[oklch(0.955_0.012_290)] text-xs font-bold rounded-sm text-foreground/70"
                   >
                     {s}
                   </Badge>
@@ -171,11 +166,6 @@ export default function WholesalersPage() {
                 </span>
                 <span>리뷰 {ws.reviewCount}건</span>
                 <span>응답률 {ws.responseRate}%</span>
-                {lowestPrice > 0 && (
-                  <span className="ml-auto font-medium text-foreground">
-                    {lowestPrice.toLocaleString("ko-KR")}원~
-                  </span>
-                )}
               </div>
             </Link>
           );

@@ -16,6 +16,7 @@ export type FlowerOrigin =
   | "중국";
 
 export type ProductCategory = "절화" | "소재";
+export type FlowerRole = "메인" | "필러" | "소재";
 
 export interface Product {
   id: string;
@@ -36,6 +37,7 @@ export interface Product {
   description?: string;
   stemLength?: number;
   bloomSize?: number;
+  flowerRole?: FlowerRole;
   isFeatured?: boolean;
   isNewArrival?: boolean;
   isSale?: boolean;

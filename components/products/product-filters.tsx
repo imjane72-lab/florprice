@@ -12,9 +12,11 @@ import {
   FLOWER_TYPES,
   MATERIAL_TYPES,
   FLOWER_COLORS,
+  FLOWER_COLOR_MAP,
   FLOWER_GRADES,
   FLOWER_ORIGINS,
 } from "@/lib/data/constants";
+import { cn } from "@/lib/utils";
 
 export interface FilterState {
   types: string[];
@@ -85,7 +87,7 @@ export function ProductFilters({
 
       <Accordion
         type="multiple"
-        defaultValue={["type", "color", "grade", "origin"]}
+        defaultValue={[]}
         className="mt-4"
       >
         <AccordionItem value="type">
@@ -111,19 +113,40 @@ export function ProductFilters({
         <AccordionItem value="color">
           <AccordionTrigger className="text-sm">색상</AccordionTrigger>
           <AccordionContent>
-            <div className="space-y-2.5">
-              {FLOWER_COLORS.map((color) => (
-                <label
-                  key={color}
-                  className="flex cursor-pointer items-center gap-2.5"
-                >
-                  <Checkbox
-                    checked={filters.colors.includes(color)}
-                    onCheckedChange={() => toggleFilter("colors", color)}
-                  />
-                  <span className="text-sm">{color}</span>
-                </label>
-              ))}
+            <div className="flex flex-wrap gap-1.5">
+              {FLOWER_COLORS.map((color) => {
+                const isSelected = filters.colors.includes(color);
+                const hex = FLOWER_COLOR_MAP[color];
+                const isMixed = color === "혼합";
+                return (
+                  <button
+                    key={color}
+                    onClick={() => toggleFilter("colors", color)}
+                    className={cn(
+                      "flex w-16 flex-col items-center gap-1 rounded-lg py-1.5 text-xs transition-all",
+                      isSelected
+                        ? "bg-secondary font-semibold text-foreground"
+                        : "text-muted-foreground hover:bg-muted",
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "h-4 w-4 shrink-0 rounded-full",
+                        color === "흰색" && "ring-1 ring-border",
+                      )}
+                      style={
+                        isMixed
+                          ? {
+                              background:
+                                "conic-gradient(#DC2626, #FACC15, #22C55E, #3B82F6, #8B5CF6, #F472B6, #DC2626)",
+                            }
+                          : { backgroundColor: hex }
+                      }
+                    />
+                    {color}
+                  </button>
+                );
+              })}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -141,7 +164,7 @@ export function ProductFilters({
                     checked={filters.grades.includes(grade)}
                     onCheckedChange={() => toggleFilter("grades", grade)}
                   />
-                  <span className="text-sm">{grade}등급</span>
+                  <span className="text-sm">{grade === "세일" ? "세일" : `${grade}등급`}</span>
                 </label>
               ))}
             </div>

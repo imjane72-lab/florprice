@@ -1,12 +1,13 @@
 import { Flower2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ProductBadge } from "@/components/ui/product-badge";
 import { type Product } from "@/lib/types/product";
 
 const gradeColors: Record<string, string> = {
-  특: "bg-primary/10 text-primary",
-  상: "bg-blue-50 text-blue-600",
-  중: "bg-amber-50 text-amber-600",
-  하: "bg-gray-100 text-gray-500",
+  특: "bg-sky-50 text-blue-600",
+  상: "bg-sky-50 text-blue-600",
+  중: "bg-sky-50 text-blue-600",
+  세일: "bg-red-50 text-red-500",
 };
 
 export function ProductCard({ product }: { product: Product }) {
@@ -15,21 +16,23 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <div className="group cursor-pointer">
       {/* Image placeholder */}
-      <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-muted transition-all group-hover:-translate-y-1 group-hover:shadow-lg">
+      <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted transition-all group-hover:-translate-y-1 group-hover:shadow-lg">
         <div className="flex h-full items-center justify-center">
-          <Flower2 className="h-16 w-16 text-primary/20" />
+          <Flower2 className="h-20 w-20 text-primary/20" />
         </div>
         {/* Badges */}
         <div className="absolute left-3 top-3 flex gap-1.5">
-          <Badge
-            variant="secondary"
-            className={`text-[10px] font-semibold ${gradeColors[product.grade]}`}
-          >
-            {product.grade}등급
-          </Badge>
           {product.isNewArrival && (
-            <Badge className="bg-rose-pink text-[10px] font-semibold text-white">
-              NEW
+            <ProductBadge variant="new">NEW</ProductBadge>
+          )}
+          {product.isSale && product.salePrice ? (
+            <ProductBadge variant="sale">SALE</ProductBadge>
+          ) : (
+            <Badge
+              variant="secondary"
+              className={`text-xs font-bold rounded-sm ${gradeColors[product.grade]}`}
+            >
+              {product.grade}
             </Badge>
           )}
         </div>
@@ -55,7 +58,18 @@ export function ProductCard({ product }: { product: Product }) {
           )}
         </h3>
         <div className="flex items-baseline gap-1">
-          <span className="text-lg font-bold">{formattedPrice}</span>
+          {product.isSale && product.salePrice ? (
+            <>
+              <span className="text-xs text-muted-foreground line-through">
+                {formattedPrice}
+              </span>
+              <span className="text-lg font-bold text-red-500">
+                {product.salePrice.toLocaleString("ko-KR")}
+              </span>
+            </>
+          ) : (
+            <span className="text-lg font-bold">{formattedPrice}</span>
+          )}
           <span className="text-sm text-muted-foreground">
             원 / {product.unit}
           </span>

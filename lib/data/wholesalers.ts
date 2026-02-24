@@ -1,4 +1,4 @@
-export type PartnerType = "꽃도매" | "부자재";
+export type PartnerType = "꽃도매" | "부자재도매";
 
 export interface WholesalerProfile {
   id: string;
@@ -106,7 +106,7 @@ export const mockWholesalers: WholesalerProfile[] = [
   {
     id: "ws-006",
     name: "경부부자재",
-    type: "부자재",
+    type: "부자재도매",
     location: "고속터미널",
     address: "서울 서초구 신반포로 176, 고속터미널 꽃시장 C동 101호",
     description:
@@ -123,7 +123,7 @@ export const mockWholesalers: WholesalerProfile[] = [
   {
     id: "ws-007",
     name: "양재소품마켓",
-    type: "부자재",
+    type: "부자재도매",
     location: "양재 화훼공판장",
     address: "서울 서초구 강남대로 27, 양재 화훼공판장 D동 105호",
     description:
@@ -140,7 +140,7 @@ export const mockWholesalers: WholesalerProfile[] = [
   {
     id: "ws-008",
     name: "플로라소품",
-    type: "부자재",
+    type: "부자재도매",
     location: "고속터미널",
     address: "서울 서초구 신반포로 176, 고속터미널 꽃시장 C동 205호",
     description:
@@ -157,7 +157,7 @@ export const mockWholesalers: WholesalerProfile[] = [
   {
     id: "ws-009",
     name: "꽃누리포장",
-    type: "부자재",
+    type: "부자재도매",
     location: "양재 화훼공판장",
     address: "서울 서초구 강남대로 27, 양재 화훼공판장 D동 210호",
     description:

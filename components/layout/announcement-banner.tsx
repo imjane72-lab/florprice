@@ -16,7 +16,7 @@ export function AnnouncementBanner() {
           신규 가입시 첫 주문{" "}
           <Link
             href="/register"
-            className="font-semibold text-primary underline underline-offset-2"
+            className="font-semibold text-foreground/85 underline underline-offset-2"
           >
             무료배송
           </Link>{" "}

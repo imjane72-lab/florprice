@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Search, ShoppingBag, User } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Menu, User, LogIn, UserPlus, ShoppingBag } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -14,51 +15,96 @@ import { cn } from "@/lib/utils";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(e.target as Node)
+      ) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50">
-      <div className="mx-auto max-w-350 px-4 py-3">
-        <div className="flex items-center justify-between rounded-full bg-lavender-light/60 px-6 py-4.5 backdrop-blur-md">
+      <div className="mx-auto max-w-7xl px-4 py-3">
+        <div className="flex items-center justify-between rounded-full bg-white/20 px-8 py-4.5 backdrop-blur-2xl border border-primary/25 shadow-[0_8px_32px_rgba(0,0,0,0.08),0_0_0_1px_rgba(255,255,255,0.15)] ring-1 ring-primary/10">
           {/* Logo */}
-          <Link href="/" className="text-xl font-bold tracking-tight">
+          <Link
+            href="/"
+            className="text-xl font-bold tracking-tight bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent"
+          >
             FlorPrice
           </Link>
 
           {/* Desktop Nav */}
           <nav className="hidden items-center gap-8 md:flex">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-foreground/70 transition-colors hover:text-foreground"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const isActive =
+                pathname === link.href || pathname.startsWith(link.href + "/");
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "relative text-base font-semibold text-foreground transition-colors hover:text-foreground/80 pb-3",
+                    isActive &&
+                      "after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-[#503D3F]",
+                  )}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Right Actions */}
           <div className="flex items-center gap-3">
-            <button
-              className="hidden rounded-full p-2 text-foreground/60 transition-colors hover:text-foreground md:flex"
-              aria-label="검색"
-            >
-              <Search className="h-4.5 w-4.5" />
-            </button>
-            <Link
-              href="/login"
-              className="rounded-full p-2 text-foreground/60 transition-colors hover:text-foreground"
-              aria-label="로그인"
-            >
-              <User className="h-4.5 w-4.5" />
-            </Link>
-            <Link
-              href="/cart"
-              className="rounded-full p-2 text-foreground/60 transition-colors hover:text-foreground"
-              aria-label="장바구니"
-            >
-              <ShoppingBag className="h-4.5 w-4.5" />
-            </Link>
+            {/* User Dropdown */}
+            <div ref={userMenuRef} className="relative">
+              <button
+                onClick={() => setUserMenuOpen((v) => !v)}
+                className="rounded-full p-2 text-foreground/60 transition-colors hover:text-foreground"
+                aria-label="사용자 메뉴"
+              >
+                <User className="h-4.5 w-4.5" />
+              </button>
+              {userMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-40 rounded-xl border border-border/50 bg-white py-1.5 shadow-lg">
+                  <Link
+                    href="/login"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/50"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    로그인
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/50"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    회원가입
+                  </Link>
+                  <Link
+                    href="/cart"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/50"
+                  >
+                    <ShoppingBag className="h-4 w-4" />
+                    장바구니
+                  </Link>
+                </div>
+              )}
+            </div>
 
             {/* Mobile Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
