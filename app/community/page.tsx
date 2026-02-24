@@ -122,7 +122,10 @@ export default function CommunityPage() {
             꽃 이야기를 나누는 커뮤니티
           </p>
         </div>
-        <Button className="rounded-full">
+        <Button
+          variant="outline"
+          className="cursor-pointer rounded-full border-border/60 bg-white text-foreground/80 shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] transition-all hover:bg-lavender-light/40 hover:border-primary/20 hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)]"
+        >
           <PenLine className="mr-2 h-4 w-4" />
           글쓰기
         </Button>

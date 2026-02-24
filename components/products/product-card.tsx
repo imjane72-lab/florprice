@@ -16,7 +16,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <div className="group cursor-pointer">
       {/* Image placeholder */}
-      <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted transition-all group-hover:-translate-y-1 group-hover:shadow-lg">
+      <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted transition-shadow group-hover:shadow-lg">
         <div className="flex h-full items-center justify-center">
           <Flower2 className="h-20 w-20 text-primary/20" />
         </div>

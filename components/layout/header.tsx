@@ -56,7 +56,7 @@ export function Header() {
                   className={cn(
                     "relative text-base font-semibold text-foreground transition-colors hover:text-foreground/80 pb-3",
                     isActive &&
-                      "after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-[#503D3F]",
+                      "after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-[#503B31]",
                   )}
                 >
                   {link.label}
